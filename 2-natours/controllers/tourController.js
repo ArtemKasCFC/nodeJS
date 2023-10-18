@@ -1,34 +1,17 @@
-const fs = require('fs');
 const Tour = require('../models/tourModel');
+const APIFeatures = require('./../utils/apiFeatures');
 
-// const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
-
-// exports.checkID = (req, res, next, val) => {
-//   console.log(`The Tour ID is ${val}`);
-//   if (!Number.isFinite(+req.params.id) || +req.params.id >= tours.length || +req.params.id < 0) {
-//     return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
-//   }
-//   next();
-// };
-
-// exports.checkBody = (req, res, next) => {
-//   if (!req.body.name || !req.body.price) {
-//     return res.status('400').json({
-//       status: 'fail',
-//       message: 'Invalid name or price',
-//     });
-//   }
-//   next();
-// };
+exports.aliasTopTours = async (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
 
 exports.getAllTours = async (req, res) => {
   try {
-    const queryObj = { ...req.query };
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach(el => delete queryObj[el]);
-
-    const query = Tour.find(queryObj);
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
+    const tours = await features.query;
     res.status(200).json({
       status: 'success',
       // requestAt: req.reqTime,
@@ -38,7 +21,7 @@ exports.getAllTours = async (req, res) => {
       },
     });
   } catch (err) {
-    req.status(404).json({
+    res.status(404).json({
       status: 'fail',
       message: err,
     });
