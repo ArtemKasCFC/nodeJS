@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validator = require('validator');
+// const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -112,11 +112,11 @@ tourSchema.pre(/^find/, function (next) {
 // });
 
 // AGGREGATION Middleware
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  // this._pipeline[0]['$match'] = { secretTour: { $ne: true } };
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   // this._pipeline[0]['$match'] = { secretTour: { $ne: true } };
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
