@@ -10,9 +10,11 @@ const handleDuplicateFieldsDB = err => {
   return new AppError(message, 400);
 };
 
-const handleValidationErrorDB = err => {
-  return new AppError(err.message, 404);
-};
+const handleValidationErrorDB = err => new AppError(err.message, 404);
+
+const handleJWTError = err => new AppError(err.message, 401);
+
+const handleJWTExpiredError = err => new AppError(err.message, 401);
 
 const sendErrDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -49,8 +51,10 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
 
     if (error.kind === 'ObjectId') error = handleObjectIDErrorDB(error);
-    if (error.code === 11000) error = handleDuplicateFieldsDB(err);
-    if (error._message === 'Validation failed') error = handleValidationErrorDB(err);
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error._message === 'Validation failed') error = handleValidationErrorDB(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError(error);
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError(error);
     sendErrProd(error, res);
   }
 };
