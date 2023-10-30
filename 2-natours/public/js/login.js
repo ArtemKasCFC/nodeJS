@@ -25,6 +25,7 @@ const login = async (email, password) => {
   } catch (err) {
     alert(err.response.data.message);
   }
+
 };
 
 document.querySelector('.form').addEventListener('submit', e => {
