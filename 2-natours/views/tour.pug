@@ -1,5 +1,10 @@
 extends base
 
+//- block append head 
+    //- meta(name="viewport" content="initial-scale=1.0, width=device-width")
+    //- script(src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8")
+    //- script(src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8")
+
 mixin reviewCard(review)
     .reviews__card
         .reviews__avatar
@@ -72,7 +77,7 @@ block content
                 img.picture-box__img(src=`/img/tours/${img}`, alt=`The Park Camper Tour ${i + 1}` class=`picture-box__img--${i+  1}`)
 
     section.section-map
-        #map
+        #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
     section.section-reviews
         .reviews

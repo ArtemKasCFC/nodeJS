@@ -1,3 +1,5 @@
+console.log('Just log');
+
 import '@babel/polyfill';
 import { login } from './login';
 
