@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -17,6 +18,11 @@ const app = express();
 ////////// Global Middlewares //////////
 // Set security HTTP headers
 app.use(helmet());
+
+app.use(function (req, res, next) {
+  res.setHeader('Content-Security-Policy', "script-src 'self' cdnjs.cloudflare.com");
+  next();
+});
 
 // Dev logging
 if (process.env.NODE_ENV === 'development') {
@@ -33,6 +39,9 @@ app.use('/api', limiter);
 
 // Body parser (reading data from body into req.body)
 app.use(express.json({ limit: '10kb' }));
+
+// Coookie parser
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injections
 app.use(mongoSanitize());
@@ -52,7 +61,7 @@ app.use(express.static(`${__dirname}/public`));
 
 // Test Middleware
 app.use((req, res, next) => {
-  // console.log(req.headers);
+  console.log(req.cookies);
   next();
 });
 
