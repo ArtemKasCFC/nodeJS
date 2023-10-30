@@ -66,6 +66,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) return next(new AppError('Please log in to get access', 401));
@@ -83,6 +85,26 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   // Grant access
   req.user = currentUser;
+  next();
+});
+
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    // Verify token
+    const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+
+    // Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) return next();
+
+    // Check if user changed password after the token was issued
+    if (await currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+    // Grant access
+    res.locals.user = currentUser;
+    return next();
+  }
   next();
 });
 

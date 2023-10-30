@@ -14,10 +14,15 @@ exports.getTour = catchAsync(async (req, res, next) => {
     path: 'reviews',
     select: 'review rating user',
   });
-  console.log(tour);
 
   res.status(200).render('tour', {
     title: 'The Forest Hiker',
     tour,
   });
 });
+
+exports.getLoginForm = (req, res) => {
+  res.status(200).render('login', {
+    title: 'Login Form',
+  });
+};

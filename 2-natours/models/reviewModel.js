@@ -71,7 +71,6 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
 });
 
 reviewSchema.post(/^findOneAnd/, async function () {
-  console.log(this.r.constructor, this.r.tour);
   await this.r.constructor.calcAvgRating(this.r.tour);
 });
 
