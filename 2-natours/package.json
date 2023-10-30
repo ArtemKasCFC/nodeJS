@@ -35,8 +35,5 @@
   },
   "devDependencies": {
     "parcel": "^2.10.1"
-  },
-  "devDependencies": {
-    "parcel": "^2.10.1"
   }
 }
