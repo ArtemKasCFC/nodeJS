@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios from 'https://cdn.jsdelivr.net/npm/axios@1.3.5/+esm';
+// import axios from 'axios';
 
 export const login = async (email, password) => {
   //   axios
@@ -6,8 +7,13 @@ export const login = async (email, password) => {
   //       email,
   //       password,
   //     })
-  //     .then(res => console.log(res))
-  //     .catch(err => console.log(err));
+  //     .then(res => {
+  //       alert('Hello there');
+  //       window.setTimeout(() => {
+  //         location.assign('/');
+  //       }, 1500);
+  //     })
+  //     .catch(err => alert(err.response.data.message));
   try {
     const res = await axios({
       method: 'POST',

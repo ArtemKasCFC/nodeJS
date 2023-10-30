@@ -11,7 +11,8 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-const reviewRouter = require('./routes/reviewRouts');
+const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
@@ -20,7 +21,7 @@ const app = express();
 app.use(helmet());
 
 app.use(function (req, res, next) {
-  res.setHeader('Content-Security-Policy', "script-src 'self' cdnjs.cloudflare.com");
+  res.setHeader('Content-Security-Policy', "script-src 'self' cdnjs.cloudflare.com cdn.jsdelivr.net");
   next();
 });
 
@@ -57,14 +58,15 @@ app.use(
 );
 
 // Serving static files
+app.set('view engine', 'pug');
 app.use(express.static(`${__dirname}/public`));
 
 // Test Middleware
 app.use((req, res, next) => {
-  console.log(req.cookies);
   next();
 });
 
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
