@@ -2,19 +2,19 @@
   "name": "natours",
   "version": "1.0.0",
   "description": "Just for learning node, express and mongoDB...",
-  "main": "bundle.js",
+  "main": "app.js",
   "scripts": {
     "start": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js",
-    "watch:js": "parcel watch ./public/js/index.js --dist-dir .public/js",
-    "build:js": "parcel watch ./public/js/index.js --dist-dir .public/js"
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "Artem Kasperovich",
   "license": "ISC",
   "dependencies": {
-    "@babel/polyfill": "^7.12.1",
-    "axios": "^1.6.0",
+    "@babel/polyfill": "^7.4.4",
+    "axios": "^0.18.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
@@ -34,6 +34,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "parcel": "^2.10.1"
+    "prettier": "^1.17.0",
+    "parcel-bundler": "^1.12.3"
   }
 }
