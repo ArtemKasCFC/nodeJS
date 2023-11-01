@@ -8,14 +8,14 @@ const jwt = require('jsonwebtoken');
 
 const signToken = id =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+    expiresIn: process.env.JWT_EXPIRES_IN
   });
 
 const createAndSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    httpOnly: true,
+    httpOnly: true
   };
 
   if (process.env.NODE_ENV === 'production') {
@@ -30,8 +30,8 @@ const createAndSendToken = (user, statusCode, res) => {
     status: 'success',
     token,
     data: {
-      user,
-    },
+      user
+    }
   });
 };
 
@@ -41,7 +41,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     // role: req.body.role,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
+    passwordConfirm: req.body.passwordConfirm
     // passwordChangedAt: req.body.passwordChangedAt,
   });
 
@@ -87,6 +87,17 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+exports.logout = (req, res) => {
+  res.cookie('jwt', '', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+
+  res.status(200).json({
+    status: 'success'
+  });
+};
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   if (req.cookies.jwt) {
@@ -135,7 +146,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'Token is sent to email',
+      message: 'Token is sent to email'
     });
   } catch (err) {
     user.passwordResetToken = undefined;
@@ -147,7 +158,10 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 });
 exports.resetPassword = catchAsync(async (req, res, next) => {
   // Get user based on the token
-  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
   const user = await User.findOne({ passwordResetToken: hashedToken, passwordResetTokenExpires: { $gt: Date.now() } });
 
   // If token has not expires and there is user, set the new password

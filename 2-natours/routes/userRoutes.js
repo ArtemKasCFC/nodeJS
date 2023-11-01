@@ -12,6 +12,8 @@ router.patch('/reset-password/:token', authController.resetPassword);
 
 router.use(authController.protect);
 
+router.get('/logout', authController.logout);
+
 router.get('/me', userController.getMe, userController.getUser);
 router.patch('/update-current-password', authController.updatePassword);
 router.patch('/update-me', userController.updateMe);
@@ -19,7 +21,14 @@ router.delete('/delete-me', userController.deleteMe);
 
 router.use(authController.restrictTo('admin'));
 
-router.route('/').get(userController.getAllUsers).post(userController.createUser);
-router.route('/:id').get(userController.getUser).patch(userController.updateUser).delete(userController.deleteUser);
+router
+  .route('/')
+  .get(userController.getAllUsers)
+  .post(userController.createUser);
+router
+  .route('/:id')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 module.exports = router;
