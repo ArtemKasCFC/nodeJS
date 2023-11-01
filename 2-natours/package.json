@@ -34,7 +34,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "prettier": "^1.17.0",
-    "parcel-bundler": "^1.12.3"
+    "parcel": "^2.10.1",
+    "prettier": "^1.17.0"
   }
 }
