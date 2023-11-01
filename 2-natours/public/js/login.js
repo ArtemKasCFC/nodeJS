@@ -1,4 +1,5 @@
 import axios from 'axios';
+// import axios from '/Users/Z/Desktop/Projects/nodeJS/2-natours/node_modules/axios/index';
 
 // export const login = (email, password) => {
 //   //   axios
@@ -27,12 +28,12 @@ export const login = async (email, password) => {
     });
 
     if (res.data.status === 'success') {
-      showAlert('success', 'Logged in successfully!');
+      alert('success', 'Logged in successfully!');
       window.setTimeout(() => {
         location.assign('/');
       }, 1500);
     }
   } catch (err) {
-    showAlert('error', err.response.data.message);
+    alert('error', err.response.data.message);
   }
 };
