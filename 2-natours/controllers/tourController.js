@@ -1,7 +1,55 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  file.mimetype.startsWith('image')
+    ? cb(null, true)
+    : cb(new AppError('Not an image! Please upload only images', 400), false);
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 }
+]);
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // Cover Image
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // Images
+  await Promise.all(
+    req.files.images.map(async (file, ind) => {
+      req.body.images = [];
+      const filename = `tour-${req.params.id}-${Date.now()}-${ind + 1}.jpeg`;
+
+      // Or file.buffer
+      await sharp(req.files.images[ind].buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+
+      req.body.images.push(filename);
+    })
+  );
+
+  next();
+});
 
 exports.aliasTopTours = async (req, res, next) => {
   req.query.limit = '5';
@@ -23,7 +71,7 @@ exports.deleteTour = factory.deleteOne(Tour);
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
-      $match: { ratingsAverage: { $gte: 4.5 } },
+      $match: { ratingsAverage: { $gte: 4.5 } }
     },
     {
       $group: {
@@ -33,22 +81,22 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
         avgRating: { $avg: '$ratingsAverage' },
         avgPrice: { $avg: '$price' },
         minPrice: { $min: '$price' },
-        maxPrice: { $max: '$price' },
-      },
+        maxPrice: { $max: '$price' }
+      }
     },
     {
-      $sort: { avgPrice: -1 },
+      $sort: { avgPrice: -1 }
     },
     {
-      $match: { _id: { $ne: 'EASY' } },
-    },
+      $match: { _id: { $ne: 'EASY' } }
+    }
   ]);
 
   res.status(200).json({
     status: 'success',
     data: {
-      stats,
-    },
+      stats
+    }
   });
 });
 
@@ -56,43 +104,43 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = +req.params.year;
   const plan = await Tour.aggregate([
     {
-      $unwind: '$startDates',
+      $unwind: '$startDates'
     },
     {
       $match: {
         startDates: {
           $gte: new Date(`${year}-1-1`),
-          $lte: new Date(`${year}-12-31`),
-        },
-      },
+          $lte: new Date(`${year}-12-31`)
+        }
+      }
     },
     {
       $group: {
         _id: { $month: '$startDates' },
         numTours: { $sum: 1 },
-        tours: { $push: '$name' },
-      },
+        tours: { $push: '$name' }
+      }
     },
     {
-      $addFields: { month: '$_id' },
+      $addFields: { month: '$_id' }
     },
     {
       $project: {
-        _id: 0,
-      },
+        _id: 0
+      }
     },
     {
-      $sort: { numTours: -1 },
+      $sort: { numTours: -1 }
     },
     {
-      $limit: 20,
-    },
+      $limit: 20
+    }
   ]);
   res.status(200).json({
     status: 'success',
     data: {
-      plan,
-    },
+      plan
+    }
   });
 });
 
@@ -104,15 +152,15 @@ exports.getTourWithin = catchAsync(async (req, res, next) => {
   if (!lat || !lng) return next(new AppError('Please provide latitude and longitude in the format "lat,lng"', 400));
 
   const tours = await Tour.find({
-    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
   });
 
   res.status(200).json({
     status: 'success',
     results: tours.length,
     data: {
-      data: tours,
-    },
+      data: tours
+    }
   });
 });
 
@@ -129,24 +177,24 @@ exports.getDistances = catchAsync(async (req, res, next) => {
       $geoNear: {
         near: {
           type: 'Point',
-          coordinates: [+lng, +lat],
+          coordinates: [+lng, +lat]
         },
         distanceField: 'distance',
-        distanceMultiplier: multiplier,
-      },
+        distanceMultiplier: multiplier
+      }
     },
     {
       $project: {
         distance: 1,
-        name: 1,
-      },
-    },
+        name: 1
+      }
+    }
   ]);
 
   res.status(200).json({
     status: 'success',
     data: {
-      data: distances,
-    },
+      data: distances
+    }
   });
 });

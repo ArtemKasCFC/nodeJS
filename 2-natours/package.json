@@ -23,18 +23,21 @@
     "express-rate-limit": "^7.1.2",
     "helmet": "^7.0.0",
     "hpp": "^0.2.3",
+    "html-to-text": "^9.0.5",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.0",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
     "pug": "^3.0.2",
+    "sharp": "^0.32.6",
     "slugify": "^1.6.6",
     "validator": "^13.11.0",
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "prettier": "^1.17.0",
-    "parcel-bundler": "^1.12.3"
+    "parcel-bundler": "^1.12.3",
+    "prettier": "^1.17.0"
   }
 }
