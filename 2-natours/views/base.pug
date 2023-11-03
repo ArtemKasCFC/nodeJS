@@ -1,7 +1,7 @@
 doctype html
 html
-    block head
-        head
+    head
+        block head
             meta(charset='UTF-8')
             meta(name='viewport' content='width=device-width, initial-scale=1.0')
             title  Natours | #{title}
@@ -19,6 +19,7 @@ html
 
         // Footer
         include _footer
+        script(src='https://js.stripe.com/v3/')
         script(type="module" src='/js/bundle.js')            
         
         //- script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js')
